@@ -67,6 +67,7 @@ class DreamboothConfig(BaseModel):
     lr_scheduler: str = "constant_with_warmup"
     lr_warmup_steps: int = 0
     max_token_length: int = 75
+    min_snr_gamma: float = 0.0
     mixed_precision: str = "fp16"
     model_dir: str = ""
     model_name: str = ""
@@ -74,6 +75,7 @@ class DreamboothConfig(BaseModel):
     noise_scheduler: str = "DDPM"
     num_train_epochs: int = 100
     offset_noise: float = 0
+    offset_sched: float = 0
     optimizer: str = "8bit AdamW"
     pad_tokens: bool = True
     pretrained_model_name_or_path: str = ""
@@ -125,6 +127,7 @@ class DreamboothConfig(BaseModel):
     use_shared_src: bool = False,
     use_subdir: bool = False
     v2: bool = False
+    c_step: int = 0
 
     def __init__(
             self,

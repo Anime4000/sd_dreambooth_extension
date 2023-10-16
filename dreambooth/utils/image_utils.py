@@ -263,7 +263,7 @@ def get_scheduler_class(scheduler_name):
 
 
 def make_bucket_resolutions(max_resolution, divisible=8) -> List[Tuple[int, int]]:
-    aspect_ratios = [(16, 9), (5, 4), (4, 3), (3, 2), (2, 1), (1, 1)]
+    aspect_ratios = [(24, 10), (64, 27), (16,10),(32, 9), (21, 9), (16, 9),(12, 1),(11, 1),(10, 1),(9, 1),(8, 1), (7, 1), (6, 1), (5, 4), (5, 1), (4, 3), (4, 1), (3, 2), (3, 1), (2, 1), (1, 1)]
     resos = set()
 
     for ar in aspect_ratios:

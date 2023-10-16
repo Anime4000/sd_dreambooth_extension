@@ -128,6 +128,11 @@ def list_optimizer():
         optimizer_list.append("Lion")
     except:
         pass
+    try:
+        from bitsandbytes.optim import Lion8bit
+        optimizer_list.append("8bit Lion")
+    except:
+        pass
 
     try:
         from dadaptation import DAdaptAdam
@@ -150,6 +155,83 @@ def list_optimizer():
     try:
         from dadaptation import DAdaptSGD
         optimizer_list.append("SGD Dadaptation")
+    except:
+        pass
+    try:
+        from transformers.optimization import Adafactor
+        optimizer_list.append("Adafactor")
+    except:
+        pass
+    try:
+        from pytorch_optimizer import CAME
+        optimizer_list.append("CAME")
+    except:
+        pass
+    try:
+        from bitsandbytes.optim import PagedAdamW8bit
+        optimizer_list.append("Paged 8bit AdamW")
+    except:
+        pass
+    try:
+        from pytorch_optimizer import Apollo
+        optimizer_list.append("Apollo")
+    except:
+        pass
+    try:
+        from bitsandbytes.optim import PagedLion8bit
+        optimizer_list.append("Paged 8bit Lion")
+    except:
+        pass
+    try:
+        from dadaptation.experimental import DAdaptAdanIP
+        optimizer_list.append("AdanIP Dadaptation")
+    except:
+        pass
+    try:
+        from pytorch_optimizer import Prodigy
+        optimizer_list.append("Prodigy")
+    except:
+        pass
+
+    try:
+        from pytorch_optimizer import Tiger
+        optimizer_list.append("Tiger")
+    except:
+        pass
+    
+    try:
+        from pytorch_optimizer import RAdam
+        optimizer_list.append("RAdam")
+    except:
+        pass
+    
+    try:
+        from pytorch_optimizer import PAdam
+        optimizer_list.append("PAdam")
+    except:
+        pass
+    
+    try:
+        from pytorch_optimizer import Ranger
+        optimizer_list.append("Ranger")
+    except:
+        pass
+
+    try:
+        from pytorch_optimizer import Ranger21
+        optimizer_list.append("Ranger21")
+    except:
+        pass
+
+    try:
+        from pytorch_optimizer import QHAdam
+        optimizer_list.append("QHAdam")
+    except:
+        pass
+    
+    try:
+        from pytorch_optimizer import Yogi
+        optimizer_list.append("Yogi")
     except:
         pass
 
@@ -189,7 +271,7 @@ def list_schedulers():
         "polynomial",
         "constant",
         "constant_with_warmup",
-        "dadapt_with_warmup",
+        "rex",
     ]
 
 

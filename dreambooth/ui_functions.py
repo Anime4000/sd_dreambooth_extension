@@ -1,3 +1,4 @@
+import gc
 import glob
 import importlib
 import importlib.util
@@ -727,7 +728,9 @@ def start_training(model_dir: str, class_gen_method: str = "Native Diffusers"):
             except:
                 from dreambooth.train_dreambooth import main  # noqa
             result = main(class_gen_method=class_gen_method)
-
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        gc.collect()
         config = result.config
         images = result.samples
         if config.revision != total_steps:
@@ -749,6 +752,7 @@ def start_training(model_dir: str, class_gen_method: str = "Native Diffusers"):
         traceback.print_exc()
         pass
 
+    status.end()
     cleanup()
     reload_system_models()
     lora_model_name = ""
@@ -1044,7 +1048,7 @@ def debug_buckets(model_name, num_epochs, batch_size):
     optimizer = AdamW(
         placeholder, lr=args.learning_rate, weight_decay=args.weight_decay
     )
-    if not args.use_lora and args.lr_scheduler == "dadapt_with_warmup":
+    if not args.use_lora:
         args.lora_learning_rate = args.learning_rate,
         args.lora_txt_learning_rate = args.learning_rate,
 

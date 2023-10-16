@@ -38,7 +38,7 @@ from dreambooth.dataclasses.prompt_data import PromptData
 from dreambooth.dataclasses.train_result import TrainResult
 from dreambooth.dataset.bucket_sampler import BucketSampler
 from dreambooth.dataset.sample_dataset import SampleDataset
-from dreambooth.deis_velocity import get_velocity
+from dreambooth.deis_velocity import get_velocity, compute_snr
 from dreambooth.diff_to_sd import compile_checkpoint, copy_diffusion_model
 from dreambooth.memory import find_executable_batch_size
 from dreambooth.optimization import UniversalScheduler, get_optimizer, get_noise_scheduler
@@ -75,7 +75,6 @@ dl.set_verbosity_error()
 last_samples = []
 last_prompts = []
 
-
 def check_and_patch_scheduler(scheduler_class):
     if not hasattr(scheduler_class, 'get_velocity'):
         logger.debug(f"Adding 'get_velocity' method to {scheduler_class.__name__}...")
@@ -90,7 +89,6 @@ except:
 
 export_diffusers = False
 user_model_dir = ""
-
 
 def set_seed(deterministic: bool):
     if deterministic:
@@ -159,6 +157,8 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
             if "iterations_per_second" in data:
                 data = {"status": json.dumps(data)}
             status_handler.update(items=data)
+
+    args.c_step = 0
 
     result = TrainResult
     result.config = args
@@ -450,7 +450,7 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
         else:
             params_to_optimize = unet.parameters()
 
-        optimizer = get_optimizer(args.optimizer, learning_rate, args.weight_decay, params_to_optimize)
+        optimizer = get_optimizer(args.optimizer, learning_rate, args.weight_decay, params_to_optimize, args.lr_warmup_steps, args.num_train_epochs)
         if len(optimizer.param_groups) > 1:
             try:
                 optimizer.param_groups[1]["weight_decay"] = args.tenc_weight_decay
@@ -576,7 +576,10 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
 
         # This is separate, because optimizer.step is only called once per "step" in training, so it's not
         # affected by batch size
-        sched_train_steps = args.num_train_epochs * train_dataset.num_train_images
+        if train_dataset.num_class_images == 0:
+            sched_train_steps = args.num_train_epochs * train_dataset.num_train_images
+        else:
+             sched_train_steps = args.num_train_epochs * train_dataset.num_train_images * 2
 
         lr_scale_pos = args.lr_scale_pos
         if class_prompts:
@@ -1235,20 +1238,61 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
                             ).latent_dist.sample()
                         latents = latents * 0.18215
 
+                    
                     # Sample noise that we'll add to the latents
-                    if args.offset_noise < 0:
+#                    if args.offset_noise < 0:
+#                        noise = torch.randn_like(latents, device=latents.device)
+#                    else:
+#                        if args.offset_sched > 0:
+#                            offset : float = (args.offset_noise * ((sched_train_steps - args.c_step) / sched_train_steps)) + (args.offset_noise - args.offset_noise * (args.offset_sched/100))
+#                            noise = torch.randn_like(
+#                            latents, device=latents.device
+#                        ) + offset * torch.randn(
+#                            latents.shape[0],
+#                            latents.shape[1],
+#                            1,
+#                            1,
+#                            device=latents.device,
+#                        )
+#                        else:
+#                            noise = torch.randn_like(
+#                                latents, device=latents.device
+#                            ) + args.offset_noise * torch.randn(
+#                                latents.shape[0],
+#                                latents.shape[1],
+#                                1,
+#                                1,
+#                                device=latents.device,
+#                            )
+#                    b_size = latents.shape[0]
+#                    args.c_step = args.c_step + args.train_batch_size
+#
+                    if args.offset_noise == 0 and args.offset_sched == 0:
                         noise = torch.randn_like(latents, device=latents.device)
                     else:
-                        noise = torch.randn_like(
-                            latents, device=latents.device
-                        ) + args.offset_noise * torch.randn(
-                            latents.shape[0],
-                            latents.shape[1],
-                            1,
-                            1,
-                            device=latents.device,
-                        )
+                        if args.offset_sched != args.offset_noise:
+                                offset : float = (args.offset_noise + (args.offset_sched * (args.c_step/sched_train_steps)))
+                                noise = torch.randn_like(
+                                latents, device=latents.device
+                            ) + offset * torch.randn(
+                                latents.shape[0],
+                                latents.shape[1],
+                                1,
+                                1,
+                                device=latents.device,
+                            )
+                        else:
+                            noise = torch.randn_like(
+                                latents, device=latents.device
+                            ) + args.offset_noise * torch.randn(
+                                latents.shape[0],
+                                latents.shape[1],
+                                1,
+                                1,
+                                device=latents.device,
+                            )
                     b_size = latents.shape[0]
+                    args.c_step = args.c_step + args.train_batch_size
 
                     # Sample a random timestep for each image
                     timesteps = torch.randint(
@@ -1291,9 +1335,21 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
 
                     if not args.split_loss:
                         loss = instance_loss = torch.nn.functional.mse_loss(
-                            noise_pred.float(), target.float(), reduction="mean"
-                        )
-                        loss *= batch["loss_avg"]
+                            noise_pred.float(), target.float(), reduction="mean")
+                        if args.min_snr_gamma == 0.0:
+                            # Compute instance loss
+                            loss = torch.nn.functional.mse_loss(model_pred.float(), target.float(), reduction="mean")
+                            loss *=batch['loss_avg']
+                        else:
+                            # Calculate loss with min snr
+                            snr = compute_snr(timesteps)
+                            mse_loss_weights = (
+                                torch.stack([snr, args.min_snr_gamma * torch.ones_like(timesteps)], dim=1).min(dim=1)[0] / snr
+                            )
+                            loss = torch.nn.functional.mse_loss(model_pred.float(), target.float(), reduction="none")
+                            loss = loss.mean(dim=list(range(1, len(loss.shape)))) * mse_loss_weights
+                            loss = loss.mean()
+                            loss *= batch["loss_avg"]
 
                     else:
                         model_pred_chunks = torch.split(noise_pred, 1, dim=0)
@@ -1322,10 +1378,18 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
                         if len(instance_chunks):
                             model_pred = torch.stack(instance_chunks, dim=0)
                             target = torch.stack(instance_pred_chunks, dim=0)
-                            instance_loss = torch.nn.functional.mse_loss(
-                                model_pred.float(), target.float(), reduction="mean"
-                            )
-
+                            instance_loss = torch.nn.functional.mse_loss(model_pred.float(), target.float(), reduction="mean")
+                            if args.min_snr_gamma == 0.0:
+                                instance_loss = torch.nn.functional.mse_loss(model_pred.float(), target.float(), reduction="mean")
+                            else:
+                                # Calculate loss with min snr
+                                snr = compute_snr(timesteps)
+                                mse_loss_weights = (
+                                torch.stack([snr, args.min_snr_gamma * torch.ones_like(timesteps)], dim=1).min(dim=1)[0] / snr
+                                    )
+                                instance_loss = torch.nn.functional.mse_loss(model_pred.float(), target.float(), reduction="none")
+                                instance_loss = instance_loss.mean(dim=list(range(1, len(instance_loss.shape)))) * mse_loss_weights
+                                instance_loss = instance_loss.mean()
                         if len(prior_pred_chunks):
                             model_pred_prior = torch.stack(prior_chunks, dim=0)
                             target_prior = torch.stack(prior_pred_chunks, dim=0)
@@ -1334,6 +1398,17 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
                                 target_prior.float(),
                                 reduction="mean",
                             )
+                            if args.min_snr_gamma == 0.0:
+                                prior_loss = torch.nn.functional.mse_loss(model_pred.float(), target.float(), reduction="mean")
+                            else:
+                                # Calculate loss with min snr
+                                snr = compute_snr(timesteps)
+                                mse_loss_weights = (
+                                    torch.stack([snr, args.min_snr_gamma * torch.ones_like(timesteps)], dim=1).min(dim=1)[0] / snr
+                                )
+                                prior_loss = torch.nn.functional.mse_loss(model_pred.float(), target.float(), reduction="none")
+                                prior_loss = prior_loss.mean(dim=list(range(1, len(prior_loss.shape)))) * mse_loss_weights
+                                prior_loss = prior_loss.mean()
 
                         if len(instance_chunks) and len(prior_chunks):
                             # Add the prior loss to the instance loss.

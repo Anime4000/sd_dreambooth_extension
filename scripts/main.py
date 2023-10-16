@@ -508,7 +508,7 @@ def on_ui_tabs():
                                 label="Learning Rate Warmup Steps",
                                 value=0,
                                 step=5,
-                                maximum=1000,
+                                maximum=10000,
                             )
 
                         with gr.Column():
@@ -563,10 +563,17 @@ def on_ui_tabs():
                                 visible=True,
                             )
                             db_offset_noise = gr.Slider(
-                                label="Offset Noise",
+                                label="Starting Offset Noise",
                                 minimum=-1,
                                 maximum=1,
-                                step=0.01,
+                                step=0.0001,
+                                value=0,
+                            )
+                            db_offset_sched = gr.Slider(
+                                label="Adjust Ofsset By",
+                                minimum=-1,
+                                maximum=1,
+                                step=0.0001,
                                 value=0,
                             )
                             db_freeze_clip_normalization = gr.Checkbox(
@@ -603,6 +610,13 @@ def on_ui_tabs():
                                 maximum=128,
                                 step=0.25,
                                 value=0,
+                                visible=True,
+                            )
+                            db_min_snr_gamma = gr.Slider(
+                                label="Min SNR Gamma",
+                                minimum=0,
+                                maximum=100,
+                                step=0.1,
                                 visible=True,
                             )
                             db_pad_tokens = gr.Checkbox(
@@ -1275,12 +1289,14 @@ def on_ui_tabs():
             db_lr_scheduler,
             db_lr_warmup_steps,
             db_max_token_length,
+            db_min_snr_gamma,
             db_mixed_precision,
             db_model_name,
             db_model_path,
             db_noise_scheduler,
             db_num_train_epochs,
             db_offset_noise,
+            db_offset_sched,
             db_optimizer,
             db_pad_tokens,
             db_pretrained_vae_name_or_path,
