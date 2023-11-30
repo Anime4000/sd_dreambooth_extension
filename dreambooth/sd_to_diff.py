@@ -1275,7 +1275,7 @@ def extract_checkpoint(new_model_name: str, checkpoint_file: str, shared_src_nam
             converted_vae_checkpoint = convert_ldm_vae_checkpoint(checkpoint, vae_config)
 
             vae = AutoencoderKL(**vae_config)
-            vae.load_state_dict(converted_vae_checkpoint)
+            vae.load_state_dict(converted_vae_checkpoint, strict=False)
             vae.save_pretrained(os.path.join(db_config.pretrained_model_name_or_path, "vae"), safe_serialization=True)
             del vae
 
