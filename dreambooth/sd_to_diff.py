@@ -632,7 +632,7 @@ def convert_ldm_clip_checkpoint(checkpoint):
             else:
                 text_model_dict[key[len("cond_stage_model.transformer."):]] = checkpoint[key]
 
-    text_model.load_state_dict(text_model_dict)
+    text_model.load_state_dict(text_model_dict, strict=False)
 
     return text_model
 
@@ -676,7 +676,7 @@ def convert_paint_by_example_checkpoint(checkpoint):
             text_model_dict[key[len("cond_stage_model.transformer."):]] = checkpoint[key]
 
     # load clip vision
-    model.model.load_state_dict(text_model_dict)
+    model.model.load_state_dict(text_model_dict, strict=False)
 
     # load mapper
     keys_mapper = {
@@ -766,7 +766,7 @@ def convert_open_clip_checkpoint(checkpoint):
 
                 text_model_dict[new_key] = checkpoint[key]
 
-    text_model.load_state_dict(text_model_dict)
+    text_model.load_state_dict(text_model_dict, strict=False)
 
     return text_model
 
@@ -1253,7 +1253,7 @@ def extract_checkpoint(new_model_name: str, checkpoint_file: str, shared_src_nam
             converted_unet_checkpoint, converted_ema_checkpoint = convert_ldm_unet_checkpoint(
                 checkpoint, unet_config, path=checkpoint_file, extract_ema=extract_ema
             )
-            unet.load_state_dict(converted_unet_checkpoint)
+            unet.load_state_dict(converted_unet_checkpoint, strict=False)
             unet.save_pretrained(os.path.join(db_config.pretrained_model_name_or_path, "unet"), safe_serialization=True)
             del unet
 
@@ -1261,7 +1261,7 @@ def extract_checkpoint(new_model_name: str, checkpoint_file: str, shared_src_nam
                 print("Saving EMA unet.")
                 has_ema = True
                 ema_unet = UNet2DConditionModel(**unet_config)
-                ema_unet.load_state_dict(converted_ema_checkpoint)
+                ema_unet.load_state_dict(converted_ema_checkpoint, strict=False)
                 ema_unet.save_pretrained(os.path.join(db_config.pretrained_model_name_or_path, "ema_unet"),
                                         safe_serialization=True)
 
@@ -1317,7 +1317,7 @@ def extract_checkpoint(new_model_name: str, checkpoint_file: str, shared_src_nam
                         checkpoint, unet_config, path=checkpoint_file
                     )
 
-                    unet.load_state_dict(converted_unet_checkpoint)
+                    unet.load_state_dict(converted_unet_checkpoint, strict=False)
                     unet.save_pretrained(os.path.join(db_config.pretrained_model_name_or_path, "ema_unet"),
                                         safe_serialization=True)
                     del unet

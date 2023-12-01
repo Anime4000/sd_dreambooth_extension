@@ -173,11 +173,6 @@ def list_optimizer():
     except:
         pass
     try:
-        from pytorch_optimizer import Apollo
-        optimizer_list.append("Apollo")
-    except:
-        pass
-    try:
         from bitsandbytes.optim import PagedLion8bit
         optimizer_list.append("Paged 8bit Lion")
     except:
@@ -220,18 +215,6 @@ def list_optimizer():
     try:
         from pytorch_optimizer import Ranger21
         optimizer_list.append("Ranger21")
-    except:
-        pass
-
-    try:
-        from pytorch_optimizer import QHAdam
-        optimizer_list.append("QHAdam")
-    except:
-        pass
-    
-    try:
-        from pytorch_optimizer import Yogi
-        optimizer_list.append("Yogi")
     except:
         pass
 

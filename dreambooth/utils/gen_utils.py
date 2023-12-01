@@ -21,7 +21,6 @@ from dreambooth.utils.utils import cleanup
 from helpers.image_builder import ImageBuilder
 from helpers.mytqdm import mytqdm
 
-
 def generate_dataset(model_name: str, instance_prompts: List[PromptData] = None, class_prompts: List[PromptData] = None,
                      batch_size=None, tokenizer=None, vae=None, debug=True, model_dir="", pbar = None):
     if debug:
@@ -111,6 +110,8 @@ def generate_classifiers(
         )
         instance_prompts = prompt_dataset.instance_prompts
         class_prompts = prompt_dataset.class_prompts
+
+
     except Exception as p:
         print(f"Exception generating dataset: {str(p)}")
         traceback.print_exc()

@@ -134,6 +134,18 @@
     "max": 1,
     "step": 0.0001
   },
+  "offset_rand_min": {
+    "value": 1,
+    "min": -5,
+    "max": 5,
+    "step": 0.1
+  },
+  "offset_rand_max": {
+    "value": 1,
+    "min": -5,
+    "max": 5,
+    "step": 0.1
+  },
   "clip_skip": {
     "value": 1,
     "min": 1,

@@ -75,7 +75,9 @@ class DreamboothConfig(BaseModel):
     noise_scheduler: str = "DDPM"
     num_train_epochs: int = 100
     offset_noise: float = 0
-    offset_sched: float = 0
+    offset_sched: float = 0    
+    offset_rand_min: float = 1.0
+    offset_rand_max: float = 1.0
     optimizer: str = "8bit AdamW"
     pad_tokens: bool = True
     pretrained_model_name_or_path: str = ""

@@ -1,0 +1,397 @@
+Sofa
+Loveseat
+Armchair
+Rocking Chair
+Recliner
+Stool
+Bench
+Ottoman
+Coffee Table
+End Table
+Dining Table
+Dining Chair
+Sideboard
+China Cabinet
+Hutch
+Dresser
+Wardrobe
+Nightstand
+Bed Frame
+Bunk Bed
+Loft Bed
+Murphy Bed
+Desk
+Bookcase
+Filing Cabinet
+TV Stand
+Entertainment Center
+Shoe Rack
+Coat Rack
+Vanity
+Drawer Chest
+Kitchen Island
+Bar Cart
+Patio Furniture
+Blender
+Toaster
+Microwave
+Oven
+Refrigerator
+Freezer
+Dishwasher
+Coffee Maker
+Electric Kettle
+Food Processor
+Slow Cooker
+Air Fryer
+Vacuum Cleaner
+Mop
+Broom
+Dustpan
+Trash Can
+Recycling Bin
+Laundry Basket
+Washing Machine
+Dryer
+Iron
+Ironing Board
+Sewing Machine
+Cutlery
+Dinnerware
+Glassware
+Pots and Pans
+Baking Sheets
+Cutting Board
+Knife Set
+Mixing Bowls
+Measuring Cups
+Piano
+Keyboard
+Acoustic Guitar
+Electric Guitar
+Bass Guitar
+Ukulele
+Violin
+Viola
+Cello
+Double Bass
+Harp
+Banjo
+Mandolin
+Flute
+Clarinet
+Oboe
+Bassoon
+Saxophone
+Trumpet
+Trombone
+French Horn
+Tuba
+Harmonica
+Accordion
+Bagpipes
+Drum Set
+Snare Drum
+Bass Drum
+Bongos
+Congas
+Tambourine
+Triangle
+Xylophone
+Sedan
+Coupe
+Convertible
+Hatchback
+SUV (Sport Utility Vehicle)
+Crossover
+Pickup Truck
+Van
+Minivan
+Station Wagon
+Electric Car
+Hybrid Car
+Diesel Car
+Sports Car
+Luxury Car
+Economy Car
+Compact Car
+Mid-size Car
+Full-size Car
+Limousine
+Roadster
+Motorcycle
+Scooter
+Oak Tree
+Pine Tree
+Maple Tree
+Rose Bush
+Tulip
+Daffodil
+Lily
+Fern
+Ivy
+Cactus
+Palm Tree
+Bamboo
+Grass
+Sunflower
+Daisy
+Marigold
+Orchid
+Violet
+Hydrangea
+Magnolia
+Cedar Tree
+Birch Tree
+Cherry Blossom Tree
+Lavender
+Mint
+House
+Apartment Building
+Skyscraper
+Office Building
+Shopping Mall
+School
+University
+Library
+Museum
+Hospital
+Clinic
+Police Station
+Fire Station
+Courthouse
+Post Office
+Bank
+Hotel
+Motel
+Restaurant
+Cafe
+Bar
+Nightclub
+Gym
+Stadium
+Arena
+Bicycle
+Playground
+Slide
+Swing Set
+Sand Box
+Bench
+Fountain
+Statue
+Street Lamp
+Fire Hydrant
+Trash Can
+Recycling Bin
+Bus Stop
+Parking Meter
+Traffic Light
+Road Sign
+Billboard
+Fence
+Gate
+Picnic Table
+Barbecue Grill
+Garden Gnome
+Bird Bath
+Mailbox
+Telephone Booth
+Abstract
+Academic
+Action Painting
+Aestheticism
+Analytical Cubism
+Art Deco
+Art Nouveau
+Arte Povera
+Ashcan School
+Assemblage
+Barbizon School
+Baroque
+Bauhaus
+Byzantine
+Caravaggisti
+Carolingian
+Chiaroscuro
+Classicism
+Cloisonnism
+Cobra
+Color Field Painting
+Conceptual Art
+Constructivism
+Contemporary
+Cubism
+Dada
+De Stijl
+Divisionism
+Early Christian
+Earth Art
+Egyptian Art
+Environmental Art
+Expressionism
+Fauvism
+Feminist Art
+Fluxus
+Futurism
+Gothic Art
+Graffiti
+Grand Manner
+Harlem Renaissance
+Hellenistic
+High Renaissance
+Hudson River School
+Impressionism
+Installation Art
+International Gothic
+Islamic Art
+Japonism
+Jungendstil
+Kinetic Art
+Land Art
+Les Nabis
+Lettrism
+Luminism
+Mannerism
+Medieval
+Metaphysical Painting
+Minimalism
+Modernism
+Naïve Art
+Naturalism
+Neo-Classicism
+Neo-Expressionism
+Neo-Impressionism
+Neo-Renaissance
+Neoclassicism
+Neo-Dada
+Nouveau Réalisme
+Op Art
+Orientalism
+Orphism
+Ottonian
+Outsider Art
+Performance Art
+Photorealism
+Plein Air
+Pointillism
+Pop Art
+Post-Impressionism
+Post-Minimalism
+Postmodernism
+Precisionism
+Pre-Raphaelite
+Process Art
+Purism
+Realism
+Regionalism
+Rococo
+Romanesque
+Romanticism
+Russian Futurism
+Social Realism
+Socialist Realism
+Surrealism
+Symbolism
+Synchromism
+Tachisme
+Ukiyo-e
+Teleporter
+Spaceship
+Laser Gun
+Holographic Display
+Artificial Intelligence (AI)
+Exoskeleton
+Virtual Reality (VR) Headset
+Force Field Generator
+Plasma Cannon
+Anti-Gravity Boots
+Hoverboard
+Space Station
+Time Machine
+Cryogenic Chamber
+Fusion Reactor
+Quantum Computer
+Nanobot Swarm
+Cloning Vat
+Alien Artifact
+Neutrino Detector
+Bionic Limb
+Jetpack
+Photon Torpedo
+Warp Drive
+Space Elevator
+Magic Wand
+Enchanted Sword
+Spellbook
+Potion Bottle
+Dragon Egg
+Elven Bow
+Dwarven Axe
+Crystal Ball
+Fairy Dust
+Goblin Shield
+Unicorn Horn
+Wizard's Hat
+Vampire Coffin
+Werewolf Potion
+Holy Grail
+Cursed Ring
+Magic Carpet
+Phoenix Feather
+Mermaid Scale
+Enchanted Armor
+Sorcerer's Stone
+Mystical Amulet
+Golem Heart
+Witch's Cauldron
+Oracle's Eye
+Sword
+Dagger
+Spear
+Mace
+Flail
+War Hammer
+Battle Axe
+Longbow
+Crossbow
+Blow Dart
+Chakram
+Boomerang
+Whip
+Halberd
+Rapier
+Nunchaku
+Katana
+Claymore
+Gladius
+Scimitar
+Glaive
+Trident
+Javelin
+Quarterstaff
+Caltrops
+Robot
+Treasure Chest
+Alien Flora Specimen
+Ghost Detector
+Enchanted Mirror
+Necronomicon
+UFO (Unidentified Flying Object)
+Mythical Beast Cage
+Potion Brewing Kit
+Magical Herb Garden
+Excalibur
+Demon Trap
+Holy Water Vial
+Druidic Staff
+Galactic Map
+Steampunk Gear
+Sorcery Scroll
+Cybernetic Implant
+Alien Communication Device
+Dragonbone
+Astral Projector
+Lightning Rod (Magical)
+Mystic Rune
+Enchanted Locket
+Alchemist’s Lab

@@ -10,6 +10,7 @@ import os
 import shutil
 import tempfile
 import time
+import random
 import traceback
 from decimal import Decimal
 from pathlib import Path
@@ -1270,9 +1271,16 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
                     if args.offset_noise == 0 and args.offset_sched == 0:
                         noise = torch.randn_like(latents, device=latents.device)
                     else:
-                        if args.offset_sched != args.offset_noise:
-                                offset : float = (args.offset_noise + (args.offset_sched * (args.c_step/sched_train_steps)))
-                                noise = torch.randn_like(
+                        if args.offset_sched != 0:
+                            if args.offset_rand_min != 1 or args.offset_rand_max != 1:
+                                r_min = args.offset_rand_min
+                                r_max = args.offset_rand_max
+                                rand_offset = round(random.uniform(r_min, r_max), 2)
+                            else: rand_offset = 1
+
+                            offset : float = ((args.offset_noise + (args.offset_sched * (args.c_step/sched_train_steps))) * rand_offset)
+
+                            noise = torch.randn_like(
                                 latents, device=latents.device
                             ) + offset * torch.randn(
                                 latents.shape[0],
@@ -1338,7 +1346,7 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
                             noise_pred.float(), target.float(), reduction="mean")
                         if args.min_snr_gamma == 0.0:
                             # Compute instance loss
-                            loss = torch.nn.functional.mse_loss(model_pred.float(), target.float(), reduction="mean")
+                            loss = torch.nn.functional.mse_loss(noise_pred.float(), target.float(), reduction="mean")
                             loss *=batch['loss_avg']
                         else:
                             # Calculate loss with min snr
@@ -1346,7 +1354,7 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
                             mse_loss_weights = (
                                 torch.stack([snr, args.min_snr_gamma * torch.ones_like(timesteps)], dim=1).min(dim=1)[0] / snr
                             )
-                            loss = torch.nn.functional.mse_loss(model_pred.float(), target.float(), reduction="none")
+                            loss = torch.nn.functional.mse_loss(noise_pred.float(), target.float(), reduction="none")
                             loss = loss.mean(dim=list(range(1, len(loss.shape)))) * mse_loss_weights
                             loss = loss.mean()
                             loss *= batch["loss_avg"]
@@ -1399,14 +1407,14 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
                                 reduction="mean",
                             )
                             if args.min_snr_gamma == 0.0:
-                                prior_loss = torch.nn.functional.mse_loss(model_pred.float(), target.float(), reduction="mean")
+                                prior_loss = torch.nn.functional.mse_loss(model_pred_prior.float(), target_prior.float(), reduction="mean")
                             else:
                                 # Calculate loss with min snr
                                 snr = compute_snr(timesteps)
                                 mse_loss_weights = (
                                     torch.stack([snr, args.min_snr_gamma * torch.ones_like(timesteps)], dim=1).min(dim=1)[0] / snr
                                 )
-                                prior_loss = torch.nn.functional.mse_loss(model_pred.float(), target.float(), reduction="none")
+                                prior_loss = torch.nn.functional.mse_loss(model_pred_prior.float(), target_prior.float(), reduction="none")
                                 prior_loss = prior_loss.mean(dim=list(range(1, len(prior_loss.shape)))) * mse_loss_weights
                                 prior_loss = prior_loss.mean()
 

@@ -47,6 +47,8 @@ from dreambooth.utils.utils import printm, cleanup
 from helpers.image_builder import ImageBuilder
 from helpers.mytqdm import mytqdm
 
+from dreambooth.genericclass import get_random_prompt
+
 logger = logging.getLogger(__name__)
 console = logging.StreamHandler()
 console.setLevel(logging.DEBUG)

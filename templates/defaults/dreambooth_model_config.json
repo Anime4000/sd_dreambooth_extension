@@ -41,6 +41,8 @@
     "num_train_epochs": 200,
     "offset_noise": 0,
     "offset_sched": 0,
+    "offset_rand_min":1,
+    "offset_rand_max":1,
     "optimizer": "8bit AdamW",
     "pad_tokens": true,
     "pretrained_vae_name_or_path": "",

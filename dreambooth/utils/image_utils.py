@@ -187,6 +187,67 @@ class FilenameTextGetter:
         class_token = concept.class_token
         output = prompt.replace("[filewords]", file_text)
 
+        # Check for [generic] placeholder and replace with text from generic.txt
+        if "[generic]" in output:
+            # Get the path of the current script
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            # Construct the relative path to generic.txt
+            generic_file_path = os.path.join(script_dir, '..', 'generic.txt')
+            with open(generic_file_path, 'r') as file:
+                generic_lines = file.readlines()
+                random_generic_text = random.choice(generic_lines).strip()
+            output = output.replace("[generic]", random_generic_text)
+
+        # Check for [generic] placeholder and replace with text from style.txt
+        if "[style]" in output:
+            # Get the path of the current script
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            # Construct the relative path to generic.txt
+            generic_file_path = os.path.join(script_dir, '..', 'style.txt')
+            with open(generic_file_path, 'r') as file:
+                generic_lines = file.readlines()
+                random_generic_text = random.choice(generic_lines).strip()
+            output = output.replace("[style]", random_generic_text)
+
+        # Check for [generic] placeholder and replace with text from generic.txt
+        if "[genfil05]" in output:
+            # Get the path of the current script
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            # Construct the relative path to generic.txt
+            generic_file_path = os.path.join(script_dir, '..', 'generic.txt')
+            
+            # Read the lines from the generic.txt file into a list
+            with open(generic_file_path, 'r') as file:
+                generic_lines = file.readlines()
+            
+            # 50/50 random selection
+            if random.choice([True, False]):
+                # Randomly select a line from the generic.txt file
+                random_generic_text = random.choice(generic_lines).strip()
+                output = output.replace("[genfil05]", random_generic_text)
+            else:
+                output = output.replace("[genfil05]", file_text)
+
+        # Check for [generic] placeholder and replace with text from generic.txt
+        if "[styfil05]" in output:
+            # Get the path of the current script
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            # Construct the relative path to generic.txt
+            generic_file_path = os.path.join(script_dir, '..', 'style.txt')
+            
+            # Read the lines from the generic.txt file into a list
+            with open(generic_file_path, 'r') as file:
+                generic_lines = file.readlines()
+            
+            # 50/50 random selection
+            if random.choice([True, False]):
+                # Randomly select a line from the generic.txt file
+                random_generic_text = random.choice(generic_lines).strip()
+                output = output.replace("[styfil05]", random_generic_text)
+            else:
+                output = output.replace("[styfil05]", file_text)
+
+
         if instance_token and class_token:
             instance_regex = re.compile(f"\\b{instance_token}\\b", flags=re.IGNORECASE)
             class_regex = re.compile(f"\\b{class_token}\\b", flags=re.IGNORECASE)

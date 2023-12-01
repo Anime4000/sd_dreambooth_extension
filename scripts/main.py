@@ -570,12 +570,25 @@ def on_ui_tabs():
                                 value=0,
                             )
                             db_offset_sched = gr.Slider(
-                                label="Adjust Ofsset By",
+                                label="Adjust Offset By",
                                 minimum=-1,
                                 maximum=1,
                                 step=0.0001,
                                 value=0,
                             )
+
+                            with gr.Row():
+                                db_offset_rand_min = gr.Number(
+                                    label="Offset Rand Min",
+                                    value=1.0,
+                                    precision=3,
+                                )
+                                db_offset_rand_max = gr.Number(
+                                    label="Offset Rand Max",
+                                    value=1.0,
+                                    precision=3,
+                                )
+
                             db_freeze_clip_normalization = gr.Checkbox(
                                 label="Freeze CLIP Normalization Layers",
                                 visible=True,
@@ -1297,6 +1310,8 @@ def on_ui_tabs():
             db_num_train_epochs,
             db_offset_noise,
             db_offset_sched,
+            db_offset_rand_min,
+            db_offset_rand_max,
             db_optimizer,
             db_pad_tokens,
             db_pretrained_vae_name_or_path,
