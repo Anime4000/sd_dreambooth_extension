@@ -384,74 +384,81 @@ def on_ui_tabs():
                                 value=False,
                                 visible=False,
                             )
-                            db_train_imagic = gr.Checkbox(label="Train Imagic Only", value=False)
+                            db_train_imagic = gr.Checkbox(label="Train Imagic Only", value=False, visible=False)
                             db_train_inpainting = gr.Checkbox(
                                 label="Train Inpainting Model",
                                 value=False,
                                 visible=False,
                             )
+
                         with gr.Column():
                             gr.HTML(value="Intervals")
                             db_num_train_epochs = gr.Slider(
-                                label="Training Steps Per Image (Epochs)",
-                                value=100,
+                                label="Epochs",
+                                value=50,
                                 maximum=1000,
                                 step=1,
                             )
-                            db_epoch_pause_frequency = gr.Slider(
-                                label="Pause After N Epochs",
-                                value=0,
-                                maximum=100,
-                                step=1,
-                            )
-                            db_epoch_pause_time = gr.Slider(
-                                label="Amount of time to pause between Epochs (s)",
-                                value=0,
-                                maximum=3600,
-                                step=1,
-                            )
-                            db_save_embedding_every = gr.Slider(
-                                label="Save Model Frequency (Epochs)",
-                                value=25,
-                                maximum=1000,
-                                step=1,
-                            )
-                            db_save_preview_every = gr.Slider(
-                                label="Save Preview(s) Frequency (Epochs)",
-                                value=5,
-                                maximum=1000,
-                                step=1,
-                            )
+                            with gr.Row():
+                                db_epoch_pause_frequency = gr.Slider(
+                                    label="Pause After N Epochs",
+                                    value=0,
+                                    maximum=100,
+                                    step=1,
+                                )
+                                db_epoch_pause_time = gr.Slider(
+                                    label="Pause between epochs (s)",
+                                    value=0,
+                                    maximum=3600,
+                                    step=1,
+                                )
+
+                            with gr.Row():
+                                db_save_embedding_every = gr.Slider(
+                                    label="Save Model each (Epochs)",
+                                    value=25,
+                                    maximum=1000,
+                                    step=1,
+                                )
+                                db_save_preview_every = gr.Slider(
+                                    label="Gen preview each (Epochs)",
+                                    value=0,
+                                    maximum=1000,
+                                    step=1,
+                                )
 
                         with gr.Column():
                             gr.HTML(value="Batching")
-                            db_train_batch_size = gr.Slider(
-                                label="Batch Size",
-                                value=1,
-                                minimum=1,
-                                maximum=100,
-                                step=1,
-                            )
-                            db_gradient_accumulation_steps = gr.Slider(
-                                label="Gradient Accumulation Steps",
-                                value=1,
-                                minimum=1,
-                                maximum=100,
-                                step=1,
-                            )
-                            db_sample_batch_size = gr.Slider(
-                                label="Class Batch Size",
-                                minimum=1,
-                                maximum=100,
-                                value=1,
-                                step=1,
-                            )
-                            db_gradient_set_to_none = gr.Checkbox(
-                                label="Set Gradients to None When Zeroing", value=True
-                            )
-                            db_gradient_checkpointing = gr.Checkbox(
-                                label="Gradient Checkpointing", value=True
-                            )
+                            with gr.Row():
+                                db_train_batch_size = gr.Slider(
+                                    label="Batch Size",
+                                    value=1,
+                                    minimum=1,
+                                    maximum=100,
+                                    step=1,
+                                )
+                                db_gradient_accumulation_steps = gr.Slider(
+                                    label="Grad Accum Batch",
+                                    value=1,
+                                    minimum=1,
+                                    maximum=100,
+                                    step=1,
+                                )
+                                db_sample_batch_size = gr.Slider(
+                                    label="Class Batch Size",
+                                    minimum=1,
+                                    maximum=100,
+                                    value=1,
+                                    step=1,
+                                )
+
+                            with gr.Row():
+                                db_gradient_set_to_none = gr.Checkbox(
+                                    label="Set Gradients to None When Zeroing", value=True
+                                )
+                                db_gradient_checkpointing = gr.Checkbox(
+                                    label="Gradient Checkpointing", value=True
+                                )
 
                         with gr.Column():
                             gr.HTML(value="Learning Rate")
@@ -521,39 +528,44 @@ def on_ui_tabs():
                                 maximum=2048,
                                 elem_id="max_res",
                             )
-                            db_hflip = gr.Checkbox(
-                                label="Apply Horizontal Flip", value=False
-                            )
-                            db_dynamic_img_norm = gr.Checkbox(
-                                label="Dynamic Image Normalization", value=False
-                            )
+
+                            with gr.Row():
+                                db_hflip = gr.Checkbox(
+                                    label="Apply Horizontal Flip", value=False
+                                )
+                                db_dynamic_img_norm = gr.Checkbox(
+                                    label="Dynamic Image Normalization", value=False
+                                )
 
                         with gr.Column():
                             gr.HTML(value="Tuning")
                             db_use_ema = gr.Checkbox(
                                 label="Use EMA", value=False
                             )
-                            db_optimizer = gr.Dropdown(
-                                label="Optimizer",
-                                value="8bit AdamW",
-                                choices=list_optimizer(),
-                            )
-                            db_mixed_precision = gr.Dropdown(
-                                label="Mixed Precision",
-                                value="no",
-                                choices=list_precisions(),
-                            )
-                            db_attention = gr.Dropdown(
-                                label="Memory Attention",
-                                value="default",
-                                choices=list_attention(),
-                            )
-                            db_cache_latents = gr.Checkbox(
-                                label="Cache Latents", value=True
-                            )
-                            db_train_unet = gr.Checkbox(
-                                label="Train UNET", value=True
-                            )
+                            with gr.Row():
+                                db_optimizer = gr.Dropdown(
+                                    label="Optimizer",
+                                    value="8bit AdamW",
+                                    choices=list_optimizer(),
+                                )
+                                db_mixed_precision = gr.Dropdown(
+                                    label="Mixed Precision",
+                                    value="no",
+                                    choices=list_precisions(),
+                                )
+                                db_attention = gr.Dropdown(
+                                    label="Memory Attention",
+                                    value="default",
+                                    choices=list_attention(),
+                                )
+                            
+                            with gr.Row():
+                                db_cache_latents = gr.Checkbox(
+                                    label="Cache Latents", value=True
+                                )
+                                db_train_unet = gr.Checkbox(
+                                    label="Train UNET", value=True
+                                )
                             db_stop_text_encoder = gr.Slider(
                                 label="Step Ratio of Text Encoder Training",
                                 minimum=0,
@@ -562,20 +574,22 @@ def on_ui_tabs():
                                 value=0,
                                 visible=True,
                             )
-                            db_offset_noise = gr.Slider(
-                                label="Starting Offset Noise",
-                                minimum=-1,
-                                maximum=1,
-                                step=0.0001,
-                                value=0,
-                            )
-                            db_offset_sched = gr.Slider(
-                                label="Adjust Offset By",
-                                minimum=-1,
-                                maximum=1,
-                                step=0.0001,
-                                value=0,
-                            )
+
+                            with gr.Row():
+                                db_offset_noise = gr.Slider(
+                                    label="Starting Offset Noise",
+                                    minimum=-1,
+                                    maximum=1,
+                                    step=0.0001,
+                                    value=0,
+                                )
+                                db_offset_sched = gr.Slider(
+                                    label="Adjust Offset By",
+                                    minimum=-1,
+                                    maximum=1,
+                                    step=0.0001,
+                                    value=0,
+                                )
 
                             with gr.Row():
                                 db_offset_rand_min = gr.Number(
@@ -601,52 +615,71 @@ def on_ui_tabs():
                                 maximum=12,
                                 step=1,
                             )
-                            db_weight_decay = gr.Slider(
-                                label="Weight Decay",
-                                minimum=0,
-                                maximum=1,
-                                step=0.001,
-                                value=0.01,
+
+                            with gr.Row():
+                                db_weight_decay = gr.Slider(
+                                    label="Weight Decay",
+                                    minimum=0,
+                                    maximum=1,
+                                    step=0.001,
+                                    value=0.01,
+                                    visible=True,
+                                )
+                                db_tenc_weight_decay = gr.Slider(
+                                    label="TENC Weight Decay",
+                                    minimum=0,
+                                    maximum=1,
+                                    step=0.001,
+                                    value=0.01,
+                                    visible=True,
+                                )
+                                db_tenc_grad_clip_norm = gr.Slider(
+                                    label="TENC Clip Norm",
+                                    minimum=0,
+                                    maximum=128,
+                                    step=0.25,
+                                    value=0,
+                                    visible=True,
+                                )
+
+                            with gr.Row():
+                                db_min_snr_gamma = gr.Slider(
+                                    label="Min SNR Gamma",
+                                    minimum=0,
+                                    maximum=100,
+                                    step=0.1,
+                                    visible=True,
+                                )
+                                db_loss_curve_scale = gr.Slider(
+                                    label="Loss Curve Scale",
+                                    minimum=-1,
+                                    maximum=1,
+                                    step=0.01,
+                                    visible=True,
+                                )
+                            db_scale_reg = gr.Checkbox(
+                                label="Scale Reg Dataset",
                                 visible=True,
+                                value=False,
                             )
-                            db_tenc_weight_decay = gr.Slider(
-                                label="TENC Weight Decay",
-                                minimum=0,
-                                maximum=1,
-                                step=0.001,
-                                value=0.01,
-                                visible=True,
-                            )
-                            db_tenc_grad_clip_norm = gr.Slider(
-                                label="TENC Gradient Clip Norm",
-                                minimum=0,
-                                maximum=128,
-                                step=0.25,
-                                value=0,
-                                visible=True,
-                            )
-                            db_min_snr_gamma = gr.Slider(
-                                label="Min SNR Gamma",
-                                minimum=0,
-                                maximum=100,
-                                step=0.1,
-                                visible=True,
-                            )
-                            db_pad_tokens = gr.Checkbox(
-                                label="Pad Tokens", value=True
-                            )
-                            db_strict_tokens = gr.Checkbox(
-                                label="Strict Tokens", value=False
-                            )
-                            db_shuffle_tags = gr.Checkbox(
-                                label="Shuffle Tags", value=True
-                            )
+
+                            with gr.Row():
+                                db_pad_tokens = gr.Checkbox(
+                                    label="Pad Tokens", value=True
+                                )
+                                db_strict_tokens = gr.Checkbox(
+                                    label="Strict Tokens", value=False
+                                )
+                                db_shuffle_tags = gr.Checkbox(
+                                    label="Shuffle Tags", value=True
+                                )
                             db_max_token_length = gr.Slider(
                                 label="Max Token Length",
                                 minimum=75,
                                 maximum=300,
                                 step=75,
                             )
+
                         with gr.Column():
                             gr.HTML(value="Prior Loss")
                             db_prior_loss_scale = gr.Checkbox(
@@ -735,9 +768,11 @@ def on_ui_tabs():
                     with gr.Column(variant="panel"):
                         with gr.Row():
                             db_train_wizard_person = gr.Button(
+                                visible=False,
                                 value="Training Wizard (Person)"
                             )
                             db_train_wizard_object = gr.Button(
+                                visible=False,
                                 value="Training Wizard (Object/Style)"
                             )
                         with gr.Tab("Concept 1"):
@@ -1303,6 +1338,7 @@ def on_ui_tabs():
             db_lr_warmup_steps,
             db_max_token_length,
             db_min_snr_gamma,
+            db_loss_curve_scale,
             db_mixed_precision,
             db_model_name,
             db_model_path,
@@ -1315,6 +1351,7 @@ def on_ui_tabs():
             db_optimizer,
             db_pad_tokens,
             db_pretrained_vae_name_or_path,
+            db_scale_reg,
             db_prior_loss_scale,
             db_prior_loss_target,
             db_prior_loss_weight,

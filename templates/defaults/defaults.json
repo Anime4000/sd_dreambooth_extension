@@ -164,6 +164,15 @@
     "max": 100,
     "step": 0.1
   },
+  "loss_curve_scale": {
+    "value": 0.0,
+    "min": -1.00,
+    "max": 1.00,
+    "step": 0.01
+  },
+  "scale_reg": {
+    "value": false
+  },
   "max_token_length": {
     "value": 75,
     "min": 75,

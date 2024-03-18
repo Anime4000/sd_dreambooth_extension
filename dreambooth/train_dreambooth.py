@@ -1398,6 +1398,7 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
                                 instance_loss = torch.nn.functional.mse_loss(model_pred.float(), target.float(), reduction="none")
                                 instance_loss = instance_loss.mean(dim=list(range(1, len(instance_loss.shape)))) * mse_loss_weights
                                 instance_loss = instance_loss.mean()
+
                         if len(prior_pred_chunks):
                             model_pred_prior = torch.stack(prior_chunks, dim=0)
                             target_prior = torch.stack(prior_pred_chunks, dim=0)
@@ -1418,6 +1419,35 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
                                 prior_loss = prior_loss.mean(dim=list(range(1, len(prior_loss.shape)))) * mse_loss_weights
                                 prior_loss = prior_loss.mean()
 
+
+                        # Normalize and shift timesteps to be between -6 and 6
+                        normalized_timesteps = ((timesteps - 1) / 999) * 12 - 6
+
+                        # Apply the sigmoid function
+                        sigmoid_scaling = 1 / (1 + torch.exp(-normalized_timesteps))
+
+                        # Modulate the intensity of the scaling with loss_curve_scale
+                        timestep_scaling = 1 + (sigmoid_scaling - 0.5) * 2 * args.loss_curve_scale
+
+                        # Reshape timestep_scaling for element-wise operation
+                        # Assuming instance_loss and prior_loss are of shape [batch_size, ...]
+                        timestep_scaling = timestep_scaling.view(-1, 1, 1, 1)  # Add extra dimensions to match the loss tensor shape
+
+                        if args.loss_curve_scale != 0:
+                            if len(instance_chunks):
+                                model_pred = torch.stack(instance_chunks, dim=0)
+                                target = torch.stack(instance_pred_chunks, dim=0)
+                                instance_loss = torch.nn.functional.mse_loss(model_pred.float(), target.float(), reduction="none")
+                                # Apply scaling and ensure scalar loss
+                                instance_loss = (instance_loss * timestep_scaling).mean()
+
+                            if len(prior_chunks) and args.scale_reg == True:
+                                model_pred_prior = torch.stack(prior_chunks, dim=0)
+                                target_prior = torch.stack(prior_pred_chunks, dim=0)
+                                prior_loss = torch.nn.functional.mse_loss(model_pred_prior.float(), target_prior.float(), reduction="none")
+                                # Apply scaling and ensure scalar loss
+                                prior_loss = (prior_loss * timestep_scaling).mean()
+                            
                         if len(instance_chunks) and len(prior_chunks):
                             # Add the prior loss to the instance loss.
                             loss = instance_loss + current_prior_loss_weight * prior_loss

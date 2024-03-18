@@ -1,5 +1,6 @@
 {
     "weight_decay": 0.01,
+    "scale_reg": false,
     "cache_latents": true,
     "clip_skip": 2,
     "concepts_list": [],

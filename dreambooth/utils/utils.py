@@ -216,7 +216,7 @@ def list_optimizer():
         from pytorch_optimizer import Ranger21
         optimizer_list.append("Ranger21")
     except:
-        pass
+        pass 
 
     return optimizer_list
 

@@ -710,7 +710,9 @@ def get_optimizer(optimizer: str, learning_rate: float, weight_decay: float, par
                 percentile_clipping=100,
                 block_wise=True,
                 amsgrad=False,
-                paged=True,
+                args=None,
+                optim_bits=32,
+                min_8bit_size=4096,
             )
 
         elif optimizer == "Apollo":
@@ -760,7 +762,6 @@ def get_optimizer(optimizer: str, learning_rate: float, weight_decay: float, par
                 weight_decay=0,
                 percentile_clipping=100,
                 block_wise=True,
-                is_paged=True,
                 min_8bit_size=4096,
             )
 
