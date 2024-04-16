@@ -1,5 +1,7 @@
 # Dreambooth Extension for SD 1.5 (512)
-This Dreambooth mainly for Anime, code modification from [@Anzhc](https://github.com/Anzhc/)
+![20240417015131 3477173320](https://github.com/Anime4000/sd_dreambooth_extension/assets/1908715/997442f6-0204-4339-8c9f-f7df83d78be7)
+> [!NOTE]
+> This Dreambooth has been modified and tuned for Anime training in SD 1.5 (512x512)
 
 ## 1.5 Stable Plus  
 This is a fork based on older commits with D8 extension in pre-SDXL rework form, as it's generally most stable and usable one, if you are not interested in SDXL.
