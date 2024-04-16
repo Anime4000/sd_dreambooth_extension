@@ -72,7 +72,10 @@ def install_requirements():
     transformers_version = importlib_metadata.version("transformers")
 
     try:
-        pip_install("-r", req_file)
+        if os.path.exists(req_file) and os.path.isfile(req_file):
+            pip_install("-r", req_file)
+        else:
+            print("\033[93mSkipping pip install because the \033[91mrequirements.txt file does not exist.\033[93m Make sure you have installed all required dependencies before executing this script.\033[0m")
 
         if has_diffusers and has_tqdm and Version(transformers_version) < Version("4.26.1"):
             print()
