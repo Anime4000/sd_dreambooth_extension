@@ -1,5 +1,5 @@
 # Dreambooth Extension for SD 1.5 (512)
-This Dreambooth mainly for Anime, few code modification from [@Anzhc](https://github.com/Anzhc/)
+This Dreambooth mainly for Anime, code modification from [@Anzhc](https://github.com/Anzhc/)
 
 ## 1.5 Stable Plus  
 This is a fork based on older commits with D8 extension in pre-SDXL rework form, as it's generally most stable and usable one, if you are not interested in SDXL.
@@ -44,3 +44,6 @@ Dreambooth revision: -
 [+] transformers version 4.30.2 installed.
 [+] bitsandbytes version 0.35.4 installed.
 ```
+
+# Use
+Create a dreambooth training project, then press **Load Settings** to load default value for Anime training
