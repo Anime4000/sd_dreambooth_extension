@@ -395,7 +395,7 @@ def on_ui_tabs():
                             gr.HTML(value="Intervals")
                             db_num_train_epochs = gr.Slider(
                                 label="Epochs",
-                                value=50,
+                                value=80,
                                 maximum=1000,
                                 step=1,
                             )
@@ -416,7 +416,7 @@ def on_ui_tabs():
                             with gr.Row():
                                 db_save_embedding_every = gr.Slider(
                                     label="Save Model each (Epochs)",
-                                    value=25,
+                                    value=0,
                                     maximum=1000,
                                     step=1,
                                 )
@@ -432,7 +432,7 @@ def on_ui_tabs():
                             with gr.Row():
                                 db_train_batch_size = gr.Slider(
                                     label="Batch Size",
-                                    value=1,
+                                    value=5,
                                     minimum=1,
                                     maximum=100,
                                     step=1,
@@ -457,7 +457,7 @@ def on_ui_tabs():
                                     label="Set Gradients to None When Zeroing", value=True
                                 )
                                 db_gradient_checkpointing = gr.Checkbox(
-                                    label="Gradient Checkpointing", value=True
+                                    label="Gradient Checkpointing", value=False
                                 )
 
                         with gr.Column():
@@ -471,15 +471,15 @@ def on_ui_tabs():
                                 )
                             with gr.Row() as standard_lr_row:
                                 db_learning_rate = gr.Number(
-                                    label="Learning Rate", value=2e-6
+                                    label="Learning Rate", value=1e-06
                                 )
                                 db_txt_learning_rate = gr.Number(
-                                    label="Text Encoder Learning Rate", value=2e-6
+                                    label="Text Encoder Learning Rate", value=1e-7
                                 )
 
                             db_lr_scheduler = gr.Dropdown(
                                 label="Learning Rate Scheduler",
-                                value="constant_with_warmup",
+                                value="rex",
                                 choices=list_schedulers(),
                             )
                             db_learning_rate_min = gr.Number(
@@ -513,7 +513,7 @@ def on_ui_tabs():
                             )
                             db_lr_warmup_steps = gr.Slider(
                                 label="Learning Rate Warmup Steps",
-                                value=0,
+                                value=1500,
                                 step=5,
                                 maximum=10000,
                             )
@@ -550,7 +550,7 @@ def on_ui_tabs():
                                 )
                                 db_mixed_precision = gr.Dropdown(
                                     label="Mixed Precision",
-                                    value="no",
+                                    value="fp16",
                                     choices=list_precisions(),
                                 )
                                 db_attention = gr.Dropdown(
@@ -571,7 +571,7 @@ def on_ui_tabs():
                                 minimum=0,
                                 maximum=1,
                                 step=0.05,
-                                value=0,
+                                value=0.75,
                                 visible=True,
                             )
 
@@ -581,36 +581,36 @@ def on_ui_tabs():
                                     minimum=-1,
                                     maximum=1,
                                     step=0.0001,
-                                    value=0,
+                                    value=0.0157,
                                 )
                                 db_offset_sched = gr.Slider(
                                     label="Adjust Offset By",
                                     minimum=-1,
                                     maximum=1,
                                     step=0.0001,
-                                    value=0,
+                                    value=-0.0157,
                                 )
 
                             with gr.Row():
                                 db_offset_rand_min = gr.Number(
                                     label="Offset Rand Min",
-                                    value=1.0,
+                                    value=0.9,
                                     precision=3,
                                 )
                                 db_offset_rand_max = gr.Number(
                                     label="Offset Rand Max",
-                                    value=1.0,
+                                    value=1.1,
                                     precision=3,
                                 )
 
                             db_freeze_clip_normalization = gr.Checkbox(
                                 label="Freeze CLIP Normalization Layers",
                                 visible=True,
-                                value=False,
+                                value=True,
                             )
                             db_clip_skip = gr.Slider(
                                 label="Clip Skip",
-                                value=1,
+                                value=2,
                                 minimum=1,
                                 maximum=12,
                                 step=1,
@@ -622,7 +622,7 @@ def on_ui_tabs():
                                     minimum=0,
                                     maximum=1,
                                     step=0.001,
-                                    value=0.01,
+                                    value=0.012,
                                     visible=True,
                                 )
                                 db_tenc_weight_decay = gr.Slider(
@@ -630,7 +630,7 @@ def on_ui_tabs():
                                     minimum=0,
                                     maximum=1,
                                     step=0.001,
-                                    value=0.01,
+                                    value=0.016,
                                     visible=True,
                                 )
                                 db_tenc_grad_clip_norm = gr.Slider(
@@ -638,7 +638,7 @@ def on_ui_tabs():
                                     minimum=0,
                                     maximum=128,
                                     step=0.25,
-                                    value=0,
+                                    value=1,
                                     visible=True,
                                 )
 
@@ -648,6 +648,7 @@ def on_ui_tabs():
                                     minimum=0,
                                     maximum=100,
                                     step=0.1,
+                                    value=5,
                                     visible=True,
                                 )
                                 db_loss_curve_scale = gr.Slider(
@@ -655,12 +656,13 @@ def on_ui_tabs():
                                     minimum=-1,
                                     maximum=1,
                                     step=0.01,
+                                    value=0.5,
                                     visible=True,
                                 )
                             db_scale_reg = gr.Checkbox(
                                 label="Scale Reg Dataset",
                                 visible=True,
-                                value=False,
+                                value=True,
                             )
 
                             with gr.Row():
@@ -690,11 +692,11 @@ def on_ui_tabs():
                                 minimum=0.01,
                                 maximum=1,
                                 step=0.01,
-                                value=0.75,
+                                value=0.45,
                             )
                             db_prior_loss_target = gr.Number(
                                 label="Prior Loss Target",
-                                value=100,
+                                value=60,
                                 visible=False,
                             )
                             db_prior_loss_weight_min = gr.Slider(
@@ -702,7 +704,7 @@ def on_ui_tabs():
                                 minimum=0.01,
                                 maximum=1,
                                 step=0.01,
-                                value=0.1,
+                                value=0.15,
                                 visible=False,
                             )
 
@@ -1360,6 +1362,7 @@ def on_ui_tabs():
             db_revision,
             db_sample_batch_size,
             db_sanity_prompt,
+            db_sanity_negative_prompt,
             db_sanity_seed,
             db_save_ckpt_after,
             db_save_ckpt_cancel,

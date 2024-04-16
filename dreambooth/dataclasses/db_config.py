@@ -91,6 +91,7 @@ class DreamboothConfig(BaseModel):
     revision: int = 0
     sample_batch_size: int = 1
     sanity_prompt: str = ""
+    sanity_negative_prompt: str = ""
     sanity_seed: int = 420420
     save_ckpt_after: bool = True
     save_ckpt_cancel: bool = False
