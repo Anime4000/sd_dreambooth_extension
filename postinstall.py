@@ -127,7 +127,9 @@ def check_bitsandbytes():
                     dest = os.path.join(bnb_dest, "cuda_setup")
                 else:
                     dest = bnb_dest
-                shutil.copy2(src_file, dest)
+
+                if not os.path.exists(os.path.join(dest, file)):
+                    shutil.copy2(src_file, dest)
         except:
             pass
 
