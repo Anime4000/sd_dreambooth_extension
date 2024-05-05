@@ -117,21 +117,7 @@ def check_bitsandbytes():
     Check for "different" B&B Files and copy only if necessary
     """
     if os.name == "nt":
-        try:
-            bnb_src = os.path.join(os.path.dirname(os.path.realpath(__file__)), "bitsandbytes_windows")
-            bnb_dest = os.path.join(sysconfig.get_paths()["purelib"], "bitsandbytes")
-            filecmp.clear_cache()
-            for file in os.listdir(bnb_src):
-                src_file = os.path.join(bnb_src, file)
-                if file == "main.py" or file == "paths.py":
-                    dest = os.path.join(bnb_dest, "cuda_setup")
-                else:
-                    dest = bnb_dest
-
-                if not os.path.exists(os.path.join(dest, file)):
-                    shutil.copy2(src_file, dest)
-        except:
-            pass
+        print("\033[91mbitsandbytes\033[0m>=\033[93m0.43.0 \033[0mis already included in Windows. No need to check; enjoy!")
 
 
 @dataclass
@@ -154,7 +140,7 @@ def check_versions():
         Dependency(module="accelerate", version="0.17.1"),
         Dependency(module="diffusers", version="0.14.0"),
         Dependency(module="transformers", version="4.25.1"),
-        Dependency(module="bitsandbytes",  version="0.35.4"),
+        Dependency(module="bitsandbytes",  version="0.43.0"),
     ]
 
     launch_errors = []
