@@ -113,6 +113,7 @@ class DreamboothConfig(BaseModel):
     snapshot: str = ""
     split_loss: bool = True
     src: str = ""
+    stop_at_steps: bool = False
     stop_text_encoder: float = 0.75
     strict_tokens: bool = False
     dynamic_img_norm: bool = False

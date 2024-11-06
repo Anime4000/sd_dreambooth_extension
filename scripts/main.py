@@ -1066,6 +1066,7 @@ def on_ui_tabs():
                     db_disable_class_matching = gr.Checkbox(label="Disable Class Matching")
                     db_disable_logging = gr.Checkbox(label="Disable Logging")
                     db_deterministic = gr.Checkbox(label="Deterministic")
+                    db_stop_at_steps = gr.Checkbox(label="Train Until Max Steps")
                     db_ema_predict = gr.Checkbox(label="Use EMA for prediction")
                     db_lora_use_buggy_requires_grad = gr.Checkbox(label="LoRA use buggy requires grad")
                     db_noise_scheduler = gr.Dropdown(
@@ -1384,6 +1385,7 @@ def on_ui_tabs():
             db_snapshot,
             db_split_loss,
             db_src,
+            db_stop_at_steps,
             db_stop_text_encoder,
             db_strict_tokens,
             db_dynamic_img_norm,
