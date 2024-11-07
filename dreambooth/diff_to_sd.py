@@ -20,7 +20,7 @@ from dreambooth.dataclasses.db_config import from_file, DreamboothConfig
 from dreambooth.shared import status
 from dreambooth.utils.model_utils import unload_system_models, \
     reload_system_models, \
-    disable_safe_unpickle, enable_safe_unpickle, import_model_class_from_model_name_or_path
+    safe_unpickle_disabled, import_model_class_from_model_name_or_path
 from dreambooth.utils.utils import printi
 from helpers.mytqdm import mytqdm
 from lora_diffusion.lora import merge_lora_to_model
@@ -60,36 +60,36 @@ for i in range(4):
     for j in range(2):
         # loop over resnets/attentions for downblocks
         hf_down_res_prefix = f"down_blocks.{i}.resnets.{j}."
-        sd_down_res_prefix = f"input_blocks.{3 * i + j + 1}.0."
+        sd_down_res_prefix = f"input_blocks.{3*i + j + 1}.0."
         unet_conversion_map_layer.append((sd_down_res_prefix, hf_down_res_prefix))
 
         if i < 3:
             # no attention layers in down_blocks.3
             hf_down_atn_prefix = f"down_blocks.{i}.attentions.{j}."
-            sd_down_atn_prefix = f"input_blocks.{3 * i + j + 1}.1."
+            sd_down_atn_prefix = f"input_blocks.{3*i + j + 1}.1."
             unet_conversion_map_layer.append((sd_down_atn_prefix, hf_down_atn_prefix))
 
     for j in range(3):
         # loop over resnets/attentions for upblocks
         hf_up_res_prefix = f"up_blocks.{i}.resnets.{j}."
-        sd_up_res_prefix = f"output_blocks.{3 * i + j}.0."
+        sd_up_res_prefix = f"output_blocks.{3*i + j}.0."
         unet_conversion_map_layer.append((sd_up_res_prefix, hf_up_res_prefix))
 
         if i > 0:
             # no attention layers in up_blocks.0
             hf_up_atn_prefix = f"up_blocks.{i}.attentions.{j}."
-            sd_up_atn_prefix = f"output_blocks.{3 * i + j}.1."
+            sd_up_atn_prefix = f"output_blocks.{3*i + j}.1."
             unet_conversion_map_layer.append((sd_up_atn_prefix, hf_up_atn_prefix))
 
     if i < 3:
         # no downsample in down_blocks.3
         hf_downsample_prefix = f"down_blocks.{i}.downsamplers.0.conv."
-        sd_downsample_prefix = f"input_blocks.{3 * (i + 1)}.0.op."
+        sd_downsample_prefix = f"input_blocks.{3*(i+1)}.0.op."
         unet_conversion_map_layer.append((sd_downsample_prefix, hf_downsample_prefix))
 
         # no upsample in up_blocks.3
         hf_upsample_prefix = f"up_blocks.{i}.upsamplers.0."
-        sd_upsample_prefix = f"output_blocks.{3 * i + 2}.{1 if i == 0 else 2}."
+        sd_upsample_prefix = f"output_blocks.{3*i + 2}.{1 if i == 0 else 2}."
         unet_conversion_map_layer.append((sd_upsample_prefix, hf_upsample_prefix))
 
 hf_mid_atn_prefix = "mid_block.attentions.0."
@@ -98,7 +98,7 @@ unet_conversion_map_layer.append((sd_mid_atn_prefix, hf_mid_atn_prefix))
 
 for j in range(2):
     hf_mid_res_prefix = f"mid_block.resnets.{j}."
-    sd_mid_res_prefix = f"middle_block.{2 * j}."
+    sd_mid_res_prefix = f"middle_block.{2*j}."
     unet_conversion_map_layer.append((sd_mid_res_prefix, hf_mid_res_prefix))
 
 
@@ -146,21 +146,22 @@ for i in range(4):
         vae_conversion_map.append((sd_downsample_prefix, hf_downsample_prefix))
 
         hf_upsample_prefix = f"up_blocks.{i}.upsamplers.0."
-        sd_upsample_prefix = f"up.{3 - i}.upsample."
+        sd_upsample_prefix = f"up.{3-i}.upsample."
         vae_conversion_map.append((sd_upsample_prefix, hf_upsample_prefix))
 
     # up_blocks have three resnets
     # also, up blocks in hf are numbered in reverse from sd
     for j in range(3):
         hf_up_prefix = f"decoder.up_blocks.{i}.resnets.{j}."
-        sd_up_prefix = f"decoder.up.{3 - i}.block.{j}."
+        sd_up_prefix = f"decoder.up.{3-i}.block.{j}."
         vae_conversion_map.append((sd_up_prefix, hf_up_prefix))
 
-# this part accounts for mid-blocks in both the encoder and the decoder
+# this part accounts for mid blocks in both the encoder and the decoder
 for i in range(2):
     hf_mid_res_prefix = f"mid_block.resnets.{i}."
-    sd_mid_res_prefix = f"mid.block_{i + 1}."
+    sd_mid_res_prefix = f"mid.block_{i+1}."
     vae_conversion_map.append((sd_mid_res_prefix, hf_mid_res_prefix))
+
 
 vae_conversion_map_attn = [
     # (stable-diffusion, HF Diffusers)
@@ -171,10 +172,21 @@ vae_conversion_map_attn = [
     ("proj_out.", "proj_attn."),
 ]
 
+# This is probably not the most ideal solution, but it does work.
+vae_extra_conversion_map = [
+    ("to_q", "q"),
+    ("to_k", "k"),
+    ("to_v", "v"),
+    ("to_out.0", "proj_out"),
+]
+
 
 def reshape_weight_for_sd(w):
     # convert HF linear weights to SD conv2d weights
-    return w.reshape(*w.shape, 1, 1)
+    if not w.ndim == 1:
+        return w.reshape(*w.shape, 1, 1)
+    else:
+        return w
 
 
 def convert_vae_state_dict(vae_state_dict):
@@ -190,10 +202,20 @@ def convert_vae_state_dict(vae_state_dict):
             mapping[k] = v
     new_state_dict = {v: vae_state_dict[k] for k, v in mapping.items()}
     weights_to_convert = ["q", "k", "v", "proj_out"]
+    keys_to_rename = {}
     for k, v in new_state_dict.items():
         for weight_name in weights_to_convert:
             if f"mid.attn_1.{weight_name}.weight" in k:
+                print(f"Reshaping {k} for SD format")
                 new_state_dict[k] = reshape_weight_for_sd(v)
+        for weight_name, real_weight_name in vae_extra_conversion_map:
+            if f"mid.attn_1.{weight_name}.weight" in k or f"mid.attn_1.{weight_name}.bias" in k:
+                keys_to_rename[k] = k.replace(weight_name, real_weight_name)
+    for k, v in keys_to_rename.items():
+        if k in new_state_dict:
+            print(f"Renaming {k} to {v}")
+            new_state_dict[v] = reshape_weight_for_sd(new_state_dict[k])
+            del new_state_dict[k]
     return new_state_dict
 
 
@@ -204,15 +226,15 @@ def convert_vae_state_dict(vae_state_dict):
 
 textenc_conversion_lst = [
     # (stable-diffusion, HF Diffusers)
-    ('resblocks.', 'text_model.encoder.layers.'),
-    ('ln_1', 'layer_norm1'),
-    ('ln_2', 'layer_norm2'),
-    ('.c_fc.', '.fc1.'),
-    ('.c_proj.', '.fc2.'),
-    ('.attn', '.self_attn'),
-    ('ln_final.', 'transformer.text_model.final_layer_norm.'),
-    ('token_embedding.weight', 'transformer.text_model.embeddings.token_embedding.weight'),
-    ('positional_embedding', 'transformer.text_model.embeddings.position_embedding.weight')
+    ("resblocks.", "text_model.encoder.layers."),
+    ("ln_1", "layer_norm1"),
+    ("ln_2", "layer_norm2"),
+    (".c_fc.", ".fc1."),
+    (".c_proj.", ".fc2."),
+    (".attn", ".self_attn"),
+    ("ln_final.", "transformer.text_model.final_layer_norm."),
+    ("token_embedding.weight", "transformer.text_model.embeddings.token_embedding.weight"),
+    ("positional_embedding", "transformer.text_model.embeddings.position_embedding.weight"),
 ]
 protected = {re.escape(x[1]): x[0] for x in textenc_conversion_lst}
 textenc_pattern = re.compile("|".join(protected.keys()))
@@ -282,39 +304,44 @@ def convert_text_enc_state_dict_v20(text_enc_dict: Dict[str, torch.Tensor]):
     capture_qkv_weight = {}
     capture_qkv_bias = {}
     for k, v in text_enc_dict.items():
-        if k.endswith('.self_attn.q_proj.weight') or k.endswith('.self_attn.k_proj.weight') or k.endswith(
-                '.self_attn.v_proj.weight'):
-            k_pre = k[:-len('.q_proj.weight')]
-            k_code = k[-len('q_proj.weight')]
+        if (
+            k.endswith(".self_attn.q_proj.weight")
+            or k.endswith(".self_attn.k_proj.weight")
+            or k.endswith(".self_attn.v_proj.weight")
+        ):
+            k_pre = k[: -len(".q_proj.weight")]
+            k_code = k[-len("q_proj.weight")]
             if k_pre not in capture_qkv_weight:
                 capture_qkv_weight[k_pre] = [None, None, None]
             capture_qkv_weight[k_pre][code2idx[k_code]] = v
             continue
 
-        if k.endswith('.self_attn.q_proj.bias') or k.endswith('.self_attn.k_proj.bias') or k.endswith(
-                '.self_attn.v_proj.bias'):
-            k_pre = k[:-len('.q_proj.bias')]
-            k_code = k[-len('q_proj.bias')]
+        if (
+            k.endswith(".self_attn.q_proj.bias")
+            or k.endswith(".self_attn.k_proj.bias")
+            or k.endswith(".self_attn.v_proj.bias")
+        ):
+            k_pre = k[: -len(".q_proj.bias")]
+            k_code = k[-len("q_proj.bias")]
             if k_pre not in capture_qkv_bias:
                 capture_qkv_bias[k_pre] = [None, None, None]
             capture_qkv_bias[k_pre][code2idx[k_code]] = v
             continue
 
         relabelled_key = textenc_pattern.sub(lambda m: protected[re.escape(m.group(0))], k)
-
         new_state_dict[relabelled_key] = v
 
-    re_keys = {
-        '.in_proj_weight': capture_qkv_weight,
-        '.in_proj_bias': capture_qkv_bias
-    }
-    for new_key in re_keys:
-        for k_pre, tensors in re_keys[new_key].items():
-            for t in tensors:
-                if t is None:
-                    raise Exception("CORRUPTED MODEL: one of the q-k-v values for the text encoder was missing")
-            relabelled_key = textenc_pattern.sub(lambda m: protected[re.escape(m.group(0))], k_pre)
-            new_state_dict[relabelled_key + new_key] = torch.cat(tensors)
+    for k_pre, tensors in capture_qkv_weight.items():
+        if None in tensors:
+            raise Exception("CORRUPTED MODEL: one of the q-k-v values for the text encoder was missing")
+        relabelled_key = textenc_pattern.sub(lambda m: protected[re.escape(m.group(0))], k_pre)
+        new_state_dict[relabelled_key + ".in_proj_weight"] = torch.cat(tensors)
+
+    for k_pre, tensors in capture_qkv_bias.items():
+        if None in tensors:
+            raise Exception("CORRUPTED MODEL: one of the q-k-v values for the text encoder was missing")
+        relabelled_key = textenc_pattern.sub(lambda m: protected[re.escape(m.group(0))], k_pre)
+        new_state_dict[relabelled_key + ".in_proj_bias"] = torch.cat(tensors)
 
     return new_state_dict
 
@@ -506,7 +533,8 @@ def compile_checkpoint(model_name: str, lora_file_name: str = None, reload_model
         printi(f"Saving checkpoint to {checkpoint_path}...", log=log)
         if save_safetensors:
             safe_dict, json_dict = split_dict(state_dict, pbar)
-            safetensors.torch.save_file(safe_dict, checkpoint_path, json_dict)
+            meta = config.export_ss_metadata()
+            safetensors.torch.save_file(safe_dict, checkpoint_path, meta)
         else:
             torch.save(state_dict, checkpoint_path)
         cfg_file = None
@@ -561,9 +589,8 @@ def load_model(model_path: str, map_location: str):
     if ".safetensors" in model_path:
         return safetensors.torch.load_file(model_path, device=map_location)
     else:
-        disable_safe_unpickle()
-        loaded = torch.load(model_path, map_location=map_location)
-        enable_safe_unpickle()
+        with safe_unpickle_disabled():
+            loaded = torch.load(model_path, map_location=map_location)
         return loaded
 
 
@@ -579,3 +606,4 @@ def apply_lora(config: DreamboothConfig, model: nn.Module, lora_file_name: str, 
                                 config.lora_unet_rank, config.lora_weight)
 
     return lora_rev
+

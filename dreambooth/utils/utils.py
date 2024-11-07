@@ -232,6 +232,12 @@ def list_attention():
         return ["default"]
 
 
+def select_attention():
+    attentions = list_attention()
+    # Return the last element
+    return attentions[-1]
+
+
 def list_precisions():
     precisions = ["no", "fp16"]
     try:
@@ -241,6 +247,12 @@ def list_precisions():
         pass
 
     return precisions
+
+
+def select_precision():
+    precisions = list_precisions()
+    # Return the last element
+    return precisions[-1]
 
 
 def list_schedulers():
