@@ -448,12 +448,15 @@ def concepts_from_file(concepts_path: str):
             concepts_path_dir = Path(concepts_path).parent # Get which folder is JSON file reside
             instance_data_dir = concept_data.get("instance_data_dir")
             class_data_dir = concept_data.get("class_data_dir")
-            if not os.path.isabs(instance_data_dir):
-                print(f"Rebuilding portable concepts path: {concepts_path_dir} + {instance_data_dir}")
-                concept_data["instance_data_dir"] = os.path.join(concepts_path_dir, instance_data_dir)
-            if not os.path.isabs(class_data_dir):
-                print(f"Rebuilding portable class path: {concepts_path_dir} + {class_data_dir}")
-                concept_data["class_data_dir"] = os.path.join(concepts_path_dir, class_data_dir)
+
+            if instance_data_dir:
+                if not os.path.isabs(instance_data_dir):
+                    print(f"Rebuilding portable concepts path: {concepts_path_dir} + {instance_data_dir}")
+                    concept_data["instance_data_dir"] = os.path.join(concepts_path_dir, instance_data_dir)
+            if class_data_dir:
+                if not os.path.isabs(class_data_dir):
+                    print(f"Rebuilding portable class path: {concepts_path_dir} + {class_data_dir}")
+                    concept_data["class_data_dir"] = os.path.join(concepts_path_dir, class_data_dir)
 
             concept = Concept(input_dict=concept_data)
             if concept.is_valid:
