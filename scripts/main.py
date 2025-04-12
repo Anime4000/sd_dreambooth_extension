@@ -1073,6 +1073,7 @@ def on_ui_tabs():
                         label="Noise scheduler",
                         value="DDPM",
                         choices=[
+                            "DDIM",
                             "DDPM",
                             "DEIS",
                             "UniPC"

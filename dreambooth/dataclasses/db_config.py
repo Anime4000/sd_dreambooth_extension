@@ -216,7 +216,7 @@ class DreamboothConfig(BaseModel):
             config_file = os.path.join(models_path, "backups", f"db_config_{self.revision}.json")
 
         with open(config_file, "w") as outfile:
-            json.dump(self.__dict__, outfile, indent=4)
+            json.dump(self.__dict__, outfile, indent=4, sort_keys=True)
 
     def load_params(self, params_dict):
         sched_swap = False
