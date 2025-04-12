@@ -728,6 +728,8 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
             logger.debug(f"  Tenc LR{' (Lora)' if args.use_lora else ''}: {txt_learning_rate}")
         logger.debug(f"  LoRA Extended: {args.use_lora_extended}")
         logger.debug(f"  V2: {args.v2}")
+        print(f"[NOTE]: Maximum training step is {max_train_steps}")
+        print(f"[NOTE]: Stop training at step is {args.stop_at_steps}")
 
         os.environ.__setattr__("CUDA_LAUNCH_BLOCKING", 1)
 
@@ -1618,7 +1620,7 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
                 training_complete = global_step >= max_train_steps if args.stop_at_steps else session_epoch >= max_train_epochs
 
             if training_complete or status.interrupted:
-                logger.debug("  Training complete (step check).")
+                logger.debug("\n  Training complete (step check).")
                 if status.interrupted:
                     state = "canceled"
                 else:
