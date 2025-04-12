@@ -114,7 +114,7 @@ class DreamboothConfig(BaseModel):
     save_state_after: bool = False
     save_state_cancel: bool = False
     save_state_during: bool = False
-    scheduler: str = "DEISMultistep"
+    scheduler: str = "DEISMultistepScheduler"
     shared_diffusers_path: str = ""
     shuffle_tags: bool = True
     snapshot: str = ""

@@ -961,7 +961,7 @@ def on_ui_tabs():
                     )
                     db_scheduler = gr.Dropdown(
                         label="Image Generation Scheduler",
-                        value="DEISMultistep",
+                        value="DEISMultistepScheduler",
                         choices=get_scheduler_names(),
                     )
                     gr.HTML(value="Manual Class Generation")
