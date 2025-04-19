@@ -143,13 +143,13 @@ class DreamboothConfig(BaseModel):
 	weight_decay: float = 0.012
 
     def __init__(
-        self,
-        model_name: str = "",
-        model_dir: str = "",
-        v2: bool = False,
-        src: str = "",
-        resolution: int = 512,
-        **kwargs
+            self,
+            model_name: str = "",
+            model_dir: str = "",
+            v2: bool = False,
+            src: str = "",
+            resolution: int = 512,
+            **kwargs
     ):
 
         super().__init__(**kwargs)
