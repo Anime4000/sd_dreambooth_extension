@@ -79,11 +79,11 @@ def get_rise_scheduler(
         if pct < 0.20:
             return min_lr + (max_lr - min_lr) * (pct / 0.20)
 
-        # Stage 2: Flat Max LR (20–35%)
-        elif pct < 0.35:
+        # Stage 2: Flat Max LR (20-40%)
+        elif pct < 0.40:
             return max_lr
 
-        # Stage 3: Cosine decay with smooth start/end (40–100%)
+        # Stage 3: Cosine decay with smooth start/end (35–100%)
         else:
             t = (pct - 0.40) / (1.0 - 0.40)
             cosine_t = 0.5 * (1 + math.cos(math.pi * t))
