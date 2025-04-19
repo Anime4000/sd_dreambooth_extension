@@ -267,6 +267,7 @@ def list_schedulers():
         "constant",
         "constant_with_warmup",
         "rex",
+        "rise_inverse_sigmoid_engine"
     ]
 
 
