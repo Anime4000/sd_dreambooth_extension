@@ -46,16 +46,16 @@ class SchedulerType(Enum):
     CONSTANT = "constant"
     CONSTANT_WITH_WARMUP = "constant_with_warmup"
     REX = "rex",
-    RISE = "rise_inverse_sigmoid_engine"
+    RISE = "rise",
 
 def get_rise_scheduler(
     optimizer: Optimizer,
     num_training_steps: int,
-    max_lr: float,
-    min_lr: float
+    max_lr,
+    min_lr=None
     ):
     """
-    Returns a learning rate scheduler based on the RISE (Relative Inverted Sigmoid Engine) algorithm.
+    Returns a learning rate scheduler based on the RISE (Rise Inversion Stable Evolution) algorithm.
 
     Args:
         optimizer (Optimizer): The optimizer to use for training.
@@ -66,27 +66,26 @@ def get_rise_scheduler(
     Returns:
         A LambdaLR scheduler that adjusts the learning rate according to the RISE algorithm.
     """
+    if min_lr is None:
+        min_lr = max_lr / 2  # fallback
+
     def lr_lambda(current_step):
         pct = current_step / num_training_steps
 
-        # Phase 1: Linear warmup (0%–10%)
-        if pct < 0.10:
-            return min_lr + (max_lr - min_lr) * (pct / 0.10)
+        # Phase 1: Warmup (0–20%)
+        if pct < 0.20:
+            return min_lr + (max_lr - min_lr) * (pct / 0.20)
 
-        # Phase 2: Constant (10%–15%)
-        elif pct < 0.15:
+        # Phase 2: Constant (20–40%)
+        elif pct < 0.40:
             return max_lr
 
-        # Phase 3: First inverted sigmoid (15%–57.5%)
-        elif pct < 0.575:
-            t = (pct - 0.15) / (0.575 - 0.15)  # remap to [0, 1]
-            curve = (1 - t) / (1 + 8 * t)  # smooth tail, 8 controls steepness
-            return min_lr + (max_lr - min_lr) * curve
-
-        # Phase 4: Second inverted sigmoid (57.5%–100%)
+        # Phase 3: Inverted sigmoid decay (40–100%)
         else:
-            t = (pct - 0.575) / (1.0 - 0.575)  # remap to [0, 1]
-            curve = (1 - t) / (1 + 20 * t)  # sharper fall, 20 makes this steeper
+            t = (pct - 0.40) / (1.0 - 0.40)  # map to [0, 1]
+            # Inverted sigmoid shape: tune `k` for smoothness
+            k = 10
+            curve = (1 - t) / (1 + k * t)
             return min_lr + (max_lr - min_lr) * curve
 
     return LambdaLR(optimizer, lr_lambda)
