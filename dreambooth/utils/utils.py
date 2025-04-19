@@ -267,7 +267,7 @@ def list_schedulers():
         "constant",
         "constant_with_warmup",
         "rex",
-        "rise",
+        "rise_inversion_stable_evolution",
     ]
 
 
