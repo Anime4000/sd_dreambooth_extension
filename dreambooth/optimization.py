@@ -45,7 +45,52 @@ class SchedulerType(Enum):
     POLYNOMIAL = "polynomial"
     CONSTANT = "constant"
     CONSTANT_WITH_WARMUP = "constant_with_warmup"
-    REX = "rex"
+    REX = "rex",
+    RISE = "rise_inverse_sigmoid_engine"
+
+def get_rise_scheduler(
+    optimizer,
+    num_training_steps,
+    max_lr,
+    min_lr
+    ):
+    """
+    Returns a learning rate scheduler based on the RISE (Relative Inverted Sigmoid Engine) algorithm.
+
+    Args:
+        optimizer (Optimizer): The optimizer to use for training.
+        num_training_steps (int): The total number of training steps.
+        max_lr (float): The maximum learning rate.
+        min_lr (float): The minimum learning rate.
+    
+    Returns:
+        A LambdaLR scheduler that adjusts the learning rate according to the RISE algorithm.
+    """
+    def lr_lambda(current_step):
+        pct = current_step / num_training_steps
+
+        # Phase 1: Linear warmup (0%–10%)
+        if pct < 0.10:
+            return min_lr + (max_lr - min_lr) * (pct / 0.10)
+
+        # Phase 2: Constant (10%–15%)
+        elif pct < 0.15:
+            return max_lr
+
+        # Phase 3: First inverted sigmoid (15%–57.5%)
+        elif pct < 0.575:
+            t = (pct - 0.15) / (0.55 - 0.15)  # remap to [0, 1]
+            curve = (1 - t) / (1 + 8 * t)  # smooth tail, 8 controls steepness
+            return min_lr + (max_lr - min_lr) * curve
+
+        # Phase 4: Second inverted sigmoid (55%–100%)
+        else:
+            t = (pct - 0.55) / (1.0 - 0.55)  # remap to [0, 1]
+            curve = (1 - t) / (1 + 20 * t)  # sharper fall, 20 makes this steeper
+            return min_lr + (max_lr - min_lr) * curve
+
+    return LambdaLR(optimizer, lr_lambda)
+
 
 def get_rex_scheduler(
     optimizer: Optimizer, 
@@ -455,6 +500,10 @@ def get_scheduler(
     if name == SchedulerType.REX:
         return get_rex_scheduler(
             optimizer, num_training_steps=total_training_steps, num_warmup_steps=num_warmup_steps
+        )
+    if name == SchedulerType.RISE:
+        return get_rise_scheduler(
+            optimizer, num_training_steps=total_training_steps, max_lr=unet_lr, min_lr=min_lr
         )
 
     # OG schedulers
