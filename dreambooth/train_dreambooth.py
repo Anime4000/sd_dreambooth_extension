@@ -595,7 +595,7 @@ def main(class_gen_method: str = "Native Diffusers", user: str = None) -> TrainR
             num_cycles=args.lr_cycles,
             power=args.lr_power,
             factor=args.lr_factor,
-            min_lr=args.min_learning_rate,
+            min_lr=args.learning_rate_min,
             scale_pos=lr_scale_pos,
             unet_lr=learning_rate,
             tenc_lr=txt_learning_rate,
