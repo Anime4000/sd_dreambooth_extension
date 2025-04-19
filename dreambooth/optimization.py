@@ -45,8 +45,8 @@ class SchedulerType(Enum):
     POLYNOMIAL = "polynomial"
     CONSTANT = "constant"
     CONSTANT_WITH_WARMUP = "constant_with_warmup"
-    REX = "rex",
-    RISE = "rise_inversion_stable_evolution",
+    REX = "rex"
+    RISE = "rise_inversion_stable_evolution"
 
 def get_rise_scheduler(
     optimizer: Optimizer,
