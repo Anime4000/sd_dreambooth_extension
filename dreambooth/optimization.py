@@ -73,6 +73,7 @@ def get_rise_scheduler(
     def lr_lambda(current_step):
         pct = current_step / num_training_steps
         max_lr = 1.0
+        min_lr = 0.5
 
         # Stage 1: Linear Warmup (0–20%)
         if pct < 0.20:
