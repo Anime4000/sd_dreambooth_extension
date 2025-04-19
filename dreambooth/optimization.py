@@ -55,7 +55,7 @@ def get_rise_scheduler(
     min_lr=None
     ):
     """
-    Returns a learning rate scheduler based on the RISE (Rise Inversion Stable Evolution) algorithm.
+    New learning rate scheduler based on the RISE (Rise Inversion Stable Evolution) algorithm by Anime4000.
 
     Args:
         optimizer (Optimizer): The optimizer to use for training.
@@ -72,15 +72,15 @@ def get_rise_scheduler(
 
     def lr_lambda(current_step):
         pct = current_step / num_training_steps
-        max_lr = 1.0
-        min_lr = 0.5
+        max_lr = 1.0 # Max scale factor for the learning rate
+        min_lr = 0.5 # Min scale factor for the learning rate by half
 
         # Stage 1: Linear Warmup (0–20%)
         if pct < 0.20:
             return min_lr + (max_lr - min_lr) * (pct / 0.20)
 
-        # Stage 2: Flat Max LR (20–40%)
-        elif pct < 0.40:
+        # Stage 2: Flat Max LR (20–35%)
+        elif pct < 0.35:
             return max_lr
 
         # Stage 3: Cosine decay with smooth start/end (40–100%)
