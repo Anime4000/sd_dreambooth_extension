@@ -83,7 +83,7 @@ def get_rise_scheduler(
             curve = (1 - t) / (1 + 8 * t)  # smooth tail, 8 controls steepness
             return min_lr + (max_lr - min_lr) * curve
 
-        # Phase 4: Second inverted sigmoid (55%–100%)
+        # Phase 4: Second inverted sigmoid (57.5%–100%)
         else:
             t = (pct - 0.55) / (1.0 - 0.55)  # remap to [0, 1]
             curve = (1 - t) / (1 + 20 * t)  # sharper fall, 20 makes this steeper
