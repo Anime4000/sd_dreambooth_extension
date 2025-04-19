@@ -65,12 +65,14 @@ def get_rise_scheduler(
     Returns:
         A LambdaLR scheduler that adjusts the learning rate according to the RISE algorithm.
     """
-    print(f"Using RISE scheduler: {max_lr}")
     if min_lr is None:
         min_lr = max_lr / 2
 
+    print(f"[NOTE] Using Matsumoto RISE algorithm: {max_lr} -> {min_lr}")
+
     def lr_lambda(current_step):
         pct = current_step / num_training_steps
+        max_lr = 1.0
 
         # Stage 1: Linear Warmup (0–20%)
         if pct < 0.20:
