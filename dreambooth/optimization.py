@@ -51,7 +51,8 @@ class SchedulerType(Enum):
 def get_rise_scheduler(
     optimizer: Optimizer,
     num_training_steps: int,
-    max_lr
+    max_lr,
+    min_lr=None
     ):
     """
     Returns a learning rate scheduler based on the RISE (Rise Inversion Stable Evolution) algorithm.
@@ -60,30 +61,30 @@ def get_rise_scheduler(
         optimizer (Optimizer): The optimizer to use for training.
         num_training_steps (int): The total number of training steps.
         max_lr (float): The maximum learning rate.
-        min_lr (float): The minimum learning rate.
     
     Returns:
         A LambdaLR scheduler that adjusts the learning rate according to the RISE algorithm.
     """
-    def lr_lambda(current_step):
-        pct = current_step / num_training_steps
+    print(f"Using RISE scheduler: {max_lr}")
+    if min_lr is None:
         min_lr = max_lr / 2
 
-        # Phase 1: Warmup (0–20%)
+    def lr_lambda(current_step):
+        pct = current_step / num_training_steps
+
+        # Stage 1: Linear Warmup (0–20%)
         if pct < 0.20:
             return min_lr + (max_lr - min_lr) * (pct / 0.20)
 
-        # Phase 2: Constant (20–40%)
+        # Stage 2: Flat Max LR (20–40%)
         elif pct < 0.40:
             return max_lr
 
-        # Phase 3: Inverted sigmoid decay (40–100%)
+        # Stage 3: Cosine decay with smooth start/end (40–100%)
         else:
-            t = (pct - 0.40) / (1.0 - 0.40)  # map to [0, 1]
-            # Inverted sigmoid shape: tune `k` for smoothness
-            k = 10
-            curve = (1 - t) / (1 + k * t)
-            return min_lr + (max_lr - min_lr) * curve
+            t = (pct - 0.40) / (1.0 - 0.40)
+            cosine_t = 0.5 * (1 + math.cos(math.pi * t))
+            return min_lr + (max_lr - min_lr) * cosine_t
 
     return LambdaLR(optimizer, lr_lambda)
 
