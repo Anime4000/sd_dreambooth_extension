@@ -502,7 +502,7 @@ def get_scheduler(
         )
     if name == SchedulerType.RISE:
         return get_rise_scheduler(
-            optimizer, num_training_steps=total_training_steps, max_lr=unet_lr, min_lr=(unet_lr/2)
+            optimizer, num_training_steps=total_training_steps, max_lr=unet_lr
         )
 
     # OG schedulers
