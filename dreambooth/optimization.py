@@ -51,8 +51,7 @@ class SchedulerType(Enum):
 def get_rise_scheduler(
     optimizer: Optimizer,
     num_training_steps: int,
-    max_lr,
-    min_lr=None
+    max_lr
     ):
     """
     Returns a learning rate scheduler based on the RISE (Rise Inversion Stable Evolution) algorithm.
@@ -66,11 +65,9 @@ def get_rise_scheduler(
     Returns:
         A LambdaLR scheduler that adjusts the learning rate according to the RISE algorithm.
     """
-    if min_lr is None:
-        min_lr = max_lr / 2  # fallback
-
     def lr_lambda(current_step):
         pct = current_step / num_training_steps
+        min_lr = max_lr / 2
 
         # Phase 1: Warmup (0–20%)
         if pct < 0.20:
