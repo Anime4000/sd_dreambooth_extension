@@ -49,10 +49,8 @@ class SchedulerType(Enum):
     RISE = "rise_inverse_sigmoid_engine"
 
 def get_rise_scheduler(
-    optimizer,
-    num_training_steps,
-    max_lr,
-    min_lr
+    optimizer: Optimizer,
+    num_training_steps: int,
     ):
     """
     Returns a learning rate scheduler based on the RISE (Relative Inverted Sigmoid Engine) algorithm.
@@ -68,6 +66,8 @@ def get_rise_scheduler(
     """
     def lr_lambda(current_step):
         pct = current_step / num_training_steps
+        max_lr = unet_lr
+        min_lr = unet_lr / 2
 
         # Phase 1: Linear warmup (0%–10%)
         if pct < 0.10:
@@ -503,7 +503,7 @@ def get_scheduler(
         )
     if name == SchedulerType.RISE:
         return get_rise_scheduler(
-            optimizer, num_training_steps=total_training_steps, max_lr=args.learning_rate, min_lr=args.learning_rate_min
+            optimizer, num_training_steps=total_training_steps
         )
 
     # OG schedulers
