@@ -46,16 +46,15 @@ class SchedulerType(Enum):
     CONSTANT = "constant"
     CONSTANT_WITH_WARMUP = "constant_with_warmup"
     REX = "rex"
-    RISE = "rise_inversion_stable_evolution"
+    RISE = "rise_inverse_stable_evolution"
 
 def get_rise_scheduler(
     optimizer: Optimizer,
     num_training_steps: int,
-    max_lr,
-    min_lr=None
+    unet_lr
     ):
     """
-    New learning rate scheduler based on the RISE (Rise Inversion Stable Evolution) algorithm by Anime4000.
+    New learning rate scheduler based on the RISE (Rise Inverse Stable Evolution) algorithm by Anime4000.
 
     Args:
         optimizer (Optimizer): The optimizer to use for training.
@@ -65,10 +64,7 @@ def get_rise_scheduler(
     Returns:
         A LambdaLR scheduler that adjusts the learning rate according to the RISE algorithm.
     """
-    if min_lr is None:
-        min_lr = max_lr / 2
-
-    print(f"[NOTE] Using Matsumoto RISE algorithm: {max_lr} -> {min_lr}")
+    print(f"[NOTE] Using Matsumoto RISE algorithm: {unet_lr} -> {unet_lr/2}")
 
     def lr_lambda(current_step):
         pct = current_step / num_training_steps
@@ -503,7 +499,7 @@ def get_scheduler(
         )
     if name == SchedulerType.RISE:
         return get_rise_scheduler(
-            optimizer, num_training_steps=total_training_steps, max_lr=unet_lr
+            optimizer, num_training_steps=total_training_steps, unet_lr=unet_lr
         )
 
     # OG schedulers
